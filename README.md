@@ -1,2 +1,0 @@
-# teletienda
-Proyecto Final - Teletienda

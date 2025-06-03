@@ -19,13 +19,17 @@ DUMMYJSON_BASE = "https://dummyjson.com"
 
 async def fetch_product(product_id: int) -> Product:
     """
-    Obtiene un producto por su ID desde DummyJSON.
+    Obtiene un producto por su ID desde DummyJSON, ignorando verificación SSL.
     """
     url = f"{DUMMYJSON_BASE}/products/{product_id}"
-    async with httpx.AsyncClient() as client:
+    # Creamos el cliente con verify=False para saltarnos la validación SSL
+    async with httpx.AsyncClient(verify=False) as client:
         resp = await client.get(url)
     if resp.status_code != 200:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"Producto {product_id} no encontrado")
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=f"Producto {product_id} no encontrado"
+        )
     data = resp.json()
     return Product(**data)
 
@@ -41,6 +45,7 @@ async def fetch_products_list(
     filter_params puede incluir claves como 'category', 'minPrice', 'maxPrice', etc.
     Retorna el JSON completo que provee DummyJSON:
     { "products": [...], "total": int, "skip": int, "limit": int }
+    Ignora verificación SSL.
     """
     params: Dict[str, Any] = {"limit": limit, "skip": skip}
     if sort:
@@ -50,10 +55,13 @@ async def fetch_products_list(
             params[key] = val
 
     url = f"{DUMMYJSON_BASE}/products"
-    async with httpx.AsyncClient() as client:
+    async with httpx.AsyncClient(verify=False) as client:
         resp = await client.get(url, params=params)
     if resp.status_code != 200:
-        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail="Error al obtener lista de productos")
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="Error al obtener lista de productos"
+        )
     return resp.json()  # contiene: products, total, skip, limit
 
 
@@ -81,7 +89,7 @@ def export_orders_to_csv(orders: List[OrderRead]) -> bytes:
                 f"{precio_unitario:.2f}",
                 f"{subtotal:.2f}"
             ])
-    return output.getvalue().encode('utf-8')
+    return output.getvalue().encode("utf-8")
 
 
 def export_orders_to_excel(orders: List[OrderRead]) -> bytes:
@@ -119,14 +127,22 @@ def export_orders_to_pdf(orders: List[OrderRead]) -> bytes:
     y -= inch
 
     for order in orders:
-        c.drawString(inch, y, f"Pedido ID: {order.id} | Usuario: {order.user_id} | Fecha: {order.created_at.isoformat()} | Estado: {order.state}")
+        c.drawString(
+            inch,
+            y,
+            f"Pedido ID: {order.id} | Usuario: {order.user_id} | "
+            f"Fecha: {order.created_at.isoformat()} | Estado: {order.state}"
+        )
         y -= 0.3 * inch
         c.drawString(inch * 1.5, y, "Productos:")
         y -= 0.3 * inch
         for item in order.items:
             precio_unitario = item.product.price
             subtotal = precio_unitario * item.quantity
-            line = f"- {item.product.title} (ID:{item.product.id}) x {item.quantity} @ {precio_unitario:.2f}€ = {subtotal:.2f}€"
+            line = (
+                f"- {item.product.title} (ID:{item.product.id}) x {item.quantity} "
+                f"@ {precio_unitario:.2f}€ = {subtotal:.2f}€"
+            )
             c.drawString(inch * 2, y, line)
             y -= 0.3 * inch
             if y < inch:

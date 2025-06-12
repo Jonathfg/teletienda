@@ -1,6 +1,6 @@
 # Tienda Online API & Front
 
-Una aplicación de ejemplo para una **tienda online** con:
+Una aplicación para una **tienda online** con:
 
 - **Backend** en FastAPI + SQLModel + PostgreSQL/SQLite + Redis  
 - **Frontend** ligero en Streamlit  

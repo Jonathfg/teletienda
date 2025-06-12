@@ -35,3 +35,33 @@ Una aplicación para una **tienda online** con:
 ├── Dockerfile             # Imagen de la API
 ├── docker-compose.yml     # Servicios: api, redis, db
 └── README.md              # Esta documentación
+
+-------------------
+
+🚀 Cómo arrancar la aplicación
+🖥️ local
+
+# 1. Crea y activa entorno virtual
+python -m venv .venv
+
+# macOS / Linux
+source .venv/bin/activate
+
+# Windows
+.\.venv\Scripts\activate
+
+# 2. Instala dependencias
+pip install -r requirements.txt
+
+# 3. Arranca la API
+uvicorn app.main:app --reload --port 8000
+
+# 4. Swagger / OpenAPI disponible en:
+http://localhost:8000/docs
+
+-------------------
+
+🌐Frontend con Streamlit
+
+# Ejecuta Streamlit
+streamlit run streamlit_app.py

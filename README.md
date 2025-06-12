@@ -2,8 +2,8 @@
 
 Una aplicación para una **tienda online** con:
 
-- **Backend** en FastAPI + SQLModel + PostgreSQL/SQLite + Redis  
-- **Frontend** ligero en Streamlit  
+- **Backend** en FastAPI + SQLModel + PostgreSQL + Redis  
+- **Frontend** Streamlit  
 - **Productos** consumidos en tiempo real desde DummyJSON  
 - **Pedidos** almacenados localmente y enriquecidos con datos externos  
 - **Autenticación** JWT (access + refresh + revocación)  
